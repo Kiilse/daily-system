@@ -1,0 +1,5 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\..\Modules\Calendar\Calendar\Calendar.csproj" />
+  </ItemGroup>
+</Project>

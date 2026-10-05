@@ -1,0 +1,35 @@
+<Solution>
+  <Folder Name="/BuildingBlocks/">
+    <Project Path="BuildingBlocks/Persistence/BuildingBlocks.Persistence.csproj" />
+    <Project Path="BuildingBlocks/Security/BuildingBlocks.Security.csproj" />
+    <Project Path="BuildingBlocks/SharedKernel/BuildingBlocks.SharedKernel.csproj" />
+    <Project Path="BuildingBlocks/Web/BuildingBlocks.Web.csproj" />
+  </Folder>
+  <Folder Name="/Hosts/">
+    <Project Path="Gateway.Bff/Gateway.Bff.csproj" />
+    <Project Path="Host.Core/Host.Core.csproj" />
+  </Folder>
+  <Folder Name="/Modules/" />
+  <Folder Name="/Modules/Account/">
+    <Project Path="Modules/Account/Account.Contracts/Account.Contracts.csproj" />
+    <Project Path="Modules/Account/Account/Account.csproj" />
+  </Folder>
+  <Folder Name="/Modules/Calendar/">
+    <Project Path="Modules/Calendar/Calendar.Contracts/Calendar.Contracts.csproj" />
+    <Project Path="Modules/Calendar/Calendar/Calendar.csproj" />
+  </Folder>
+  <Folder Name="/Modules/Menu/">
+    <Project Path="Modules/Menu/Menu.Contracts/Menu.Contracts.csproj" />
+    <Project Path="Modules/Menu/Menu/Menu.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Account.IntegrationTests/Account.IntegrationTests.csproj" />
+    <Project Path="tests/Account.UnitTests/Account.UnitTests.csproj" />
+    <Project Path="tests/Architecture.Tests/Architecture.Tests.csproj" />
+    <Project Path="tests/BuildingBlocks.UnitTests/BuildingBlocks.UnitTests.csproj" />
+    <Project Path="tests/Calendar.IntegrationTests/Calendar.IntegrationTests.csproj" />
+    <Project Path="tests/Calendar.UnitTests/Calendar.UnitTests.csproj" />
+    <Project Path="tests/Menu.IntegrationTests/Menu.IntegrationTests.csproj" />
+    <Project Path="tests/Menu.UnitTests/Menu.UnitTests.csproj" />
+  </Folder>
+</Solution>

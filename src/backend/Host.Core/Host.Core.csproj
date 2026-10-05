@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- Small containers on Railway: workstation GC keeps memory low, invariant globalization drops ICU -->
+  <PropertyGroup>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+    <InvariantGlobalization>true</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BuildingBlocks\Web\BuildingBlocks.Web.csproj" />
+    <ProjectReference Include="..\Modules\Account\Account\Account.csproj" />
+    <ProjectReference Include="..\Modules\Menu\Menu\Menu.csproj" />
+    <ProjectReference Include="..\Modules\Calendar\Calendar\Calendar.csproj" />
+  </ItemGroup>
+</Project>
