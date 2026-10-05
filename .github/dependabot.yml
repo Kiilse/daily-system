@@ -1,0 +1,37 @@
+# Dependency updates (ADR-016). Weekly, minor and patch updates grouped into one PR per ecosystem.
+# nuget, npm and docker report "no manifest found" until tickets #2, #4 and #5 add the projects.
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /src/backend
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: npm
+    directory: /src/frontend
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  - package-ecosystem: docker
+    directories:
+      - /infra
+      - /src/backend/**
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]

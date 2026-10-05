@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Blocks a commit when the staged changes contain a secret (ADR-016).
+# Enabled by tools/setup-dev.sh. Never bypass it with --no-verify to push a real secret:
+# the repository is public, rotate the secret instead.
+set -euo pipefail
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "pre-commit: gitleaks is not installed, commit blocked." >&2
+  echo "Install it (https://github.com/gitleaks/gitleaks#installing) and run tools/setup-dev.sh." >&2
+  exit 1
+fi
+
+gitleaks git --pre-commit --staged --redact --no-banner

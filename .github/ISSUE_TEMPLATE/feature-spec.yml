@@ -1,0 +1,73 @@
+name: Feature spec
+description: One ticket = one issue = one branch = one PR (ADR-003)
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        One feature only. If this starts to cover more than one, split it into several issues before starting.
+        Specs and roadmap live in Notion, this issue is the execution ticket.
+  - type: input
+    id: notion
+    attributes:
+      label: Notion spec
+      description: Link to the Notion ticket
+      placeholder: https://app.notion.com/p/...
+  - type: input
+    id: branch
+    attributes:
+      label: Branch
+      placeholder: feature/<issue>-<slug>
+  - type: input
+    id: depends-on
+    attributes:
+      label: Depends on
+      placeholder: "#2, #3 (or none)"
+  - type: input
+    id: adr
+    attributes:
+      label: ADR
+      placeholder: ADR-007
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Why this ticket exists
+  - type: textarea
+    id: goal
+    attributes:
+      label: Goal
+      description: What is true once this ticket is done, in a sentence or two
+    validations:
+      required: true
+  - type: textarea
+    id: specification
+    attributes:
+      label: Specification
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: Checkable, in Given / When / Then form
+      value: |
+        - [ ] Given ..., when ..., then ...
+    validations:
+      required: true
+  - type: textarea
+    id: tests
+    attributes:
+      label: Tests to write
+  - type: textarea
+    id: security
+    attributes:
+      label: Security
+      description: Data classification (C1/C2/C3), secrets, authorization concerns
+  - type: textarea
+    id: feature-flag
+    attributes:
+      label: Feature flag
+      description: Flag name if the feature spans several PRs
+  - type: textarea
+    id: out-of-scope
+    attributes:
+      label: Out of scope
