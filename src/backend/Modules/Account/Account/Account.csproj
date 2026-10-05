@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Account.Contracts\Account.Contracts.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\SharedKernel\BuildingBlocks.SharedKernel.csproj" />
+    <ProjectReference Include="..\..\..\BuildingBlocks\Web\BuildingBlocks.Web.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Account.UnitTests" />
+    <InternalsVisibleTo Include="Account.IntegrationTests" />
+  </ItemGroup>
+</Project>
