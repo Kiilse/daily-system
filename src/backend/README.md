@@ -37,8 +37,19 @@ Health endpoints, on both hosts:
 - `/health/live`: the process answers. Runs no check.
 - `/health/ready`: runs the checks tagged `ready` (none yet, the database check comes with #4).
 
-## Module boundary rule
+## Architecture rules
 
 A module may reference another module **only through its `*.Contracts` project**, never its implementation project.
 
-Today this rule is not enforced: adding a reference from `Menu` to `Calendar` still builds. Ticket #3 adds the ArchUnitNET tests in `tests/Architecture.Tests` that make such a reference fail the build.
+`tests/Architecture.Tests` enforces this and the other structural rules, so breaking one fails the test run. Most rules use ArchUnitNET on the compiled code. `ProjectReferenceTests` checks the `.csproj` files too, because the compiler drops a project reference no code uses yet, which ArchUnitNET cannot see.
+
+| # | Rule | Tests |
+|---|---|---|
+| 1 | A module uses another module only through its `*.Contracts` | `ModuleBoundaryTests`, `ProjectReferenceTests` |
+| 2 | A `*.Contracts` project depends only on `BuildingBlocks.SharedKernel` | `ModuleBoundaryTests`, `ProjectReferenceTests` |
+| 3 | Types in a `*.Domain` namespace do not use EF Core, ASP.NET Core or `System.Net.Http` | `LayeringTests` |
+| 4 | `Gateway.Bff` uses no module, implementation or contracts | `ModuleBoundaryTests`, `ProjectReferenceTests` |
+| 5 | In a module implementation project, only `{Name}Module` is public | `VisibilityTests` |
+| 6 | Only `BuildingBlocks.Security` uses `AesGcm` | `CryptographyTests` |
+
+Adding a module: add its folder under `Modules/`, then add it to `ProductionCode.Modules` in `tests/Architecture.Tests`. `ModuleListTests` fails until both match.

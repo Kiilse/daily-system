@@ -11,20 +11,6 @@
           "BuildingBlocks.SharedKernel": "[1.0.0, )"
         }
       },
-      "calendar": {
-        "type": "Project",
-        "dependencies": {
-          "BuildingBlocks.SharedKernel": "[1.0.0, )",
-          "BuildingBlocks.Web": "[1.0.0, )",
-          "Calendar.Contracts": "[1.0.0, )"
-        }
-      },
-      "calendar.contracts": {
-        "type": "Project",
-        "dependencies": {
-          "BuildingBlocks.SharedKernel": "[1.0.0, )"
-        }
-      },
       "menu.contracts": {
         "type": "Project",
         "dependencies": {

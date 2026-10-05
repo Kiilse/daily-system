@@ -1,5 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <PackageReference Include="TngTech.ArchUnitNET.xUnitV3" />
+  </ItemGroup>
+
+  <!-- Every production assembly the rules inspect. Host.Core is left out: it may reference modules, and its Program clashes with Gateway.Bff's. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\BuildingBlocks\Persistence\BuildingBlocks.Persistence.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\Security\BuildingBlocks.Security.csproj" />
+    <ProjectReference Include="..\..\Gateway.Bff\Gateway.Bff.csproj" />
     <ProjectReference Include="..\..\Modules\Account\Account\Account.csproj" />
     <ProjectReference Include="..\..\Modules\Menu\Menu\Menu.csproj" />
     <ProjectReference Include="..\..\Modules\Calendar\Calendar\Calendar.csproj" />

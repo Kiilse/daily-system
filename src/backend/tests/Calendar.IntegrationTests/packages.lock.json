@@ -551,7 +551,6 @@
         "dependencies": {
           "BuildingBlocks.SharedKernel": "[1.0.0, )",
           "BuildingBlocks.Web": "[1.0.0, )",
-          "Calendar": "[1.0.0, )",
           "Menu.Contracts": "[1.0.0, )"
         }
       },
