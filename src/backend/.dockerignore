@@ -1,0 +1,7 @@
+# Build context of the backend images (src/backend). Keep it small and free of local build output.
+**/bin/
+**/obj/
+**/*.user
+**/Dockerfile
+tests/
+.dockerignore

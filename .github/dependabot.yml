@@ -1,5 +1,5 @@
 # Dependency updates (ADR-016). Weekly, minor and patch updates grouped into one PR per ecosystem.
-# nuget, npm and docker report "no manifest found" until tickets #2, #4 and #5 add the projects.
+# npm reports "no manifest found" until ticket #5 adds the frontend.
 version: 2
 updates:
   - package-ecosystem: nuget
@@ -28,8 +28,16 @@ updates:
 
   - package-ecosystem: docker
     directories:
-      - /infra
       - /src/backend/**
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]
+
+  # Image digests in infra/docker-compose.yml (the docker ecosystem only reads Dockerfiles).
+  - package-ecosystem: docker-compose
+    directory: /infra
     schedule:
       interval: weekly
     groups:

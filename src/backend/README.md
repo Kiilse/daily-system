@@ -15,6 +15,7 @@ Run from `src/backend/`.
 | Restore exactly the locked versions | `dotnet restore Ecosystem.slnx --locked-mode` |
 | Run Host.Core | `dotnet run --project Host.Core` then `curl localhost:5100/health/live` |
 | Run Gateway.Bff | `dotnet run --project Gateway.Bff` then `curl localhost:5000/health/live` |
+| Run everything in containers (PostgreSQL, core, gateway-bff) | from `infra/`: see [docs/runbooks/local-setup.md](../../docs/runbooks/local-setup.md) |
 
 Local ports come from each host's `Properties/launchSettings.json`. In a container, both hosts listen on 8080 (`ASPNETCORE_HTTP_PORTS`, the .NET image default). To try the container path locally: `ASPNETCORE_HTTP_PORTS=8080 dotnet run --project Host.Core --no-launch-profile`.
 
@@ -26,16 +27,19 @@ Package versions live in `Directory.Packages.props` (central package management)
 |---|---|
 | `BuildingBlocks/SharedKernel` | `Error`, `ErrorType`, `Result`, `Result<T>`. No framework dependency. |
 | `BuildingBlocks/Web` | `Result` to HTTP mapping (RFC 9457 Problem Details), health check endpoints. |
-| `BuildingBlocks/Security`, `BuildingBlocks/Persistence` | Empty for now, filled by #18 and #4. |
+| `BuildingBlocks/Security`, `BuildingBlocks/Persistence` | Empty for now, filled by #18 and by the first module that stores data. |
 | `Modules/<Name>/<Name>.Contracts` | The only public surface of a module. |
 | `Modules/<Name>/<Name>` | Module implementation: `<Name>Module.cs` (registration and endpoints) plus `Features/<Area>/<Slice>/`. |
 | `Host.Core` | Hosts the Account, Menu and Calendar modules. |
 | `Gateway.Bff` | Backend for frontend. Health endpoints only until #14/#15. |
-| `tests/` | One unit and one integration project per module, `BuildingBlocks.UnitTests`, `Architecture.Tests`. |
+| `tests/` | One unit and one integration project per module, `BuildingBlocks.UnitTests`, `Architecture.Tests`, `Infrastructure.IntegrationTests` (the `infra/` database bootstrap against a real PostgreSQL, needs Docker). |
+| `Host.Core/Dockerfile`, `Gateway.Bff/Dockerfile` | Production images: SDK build stage, chiseled runtime running as the non-root `app` user. Build context is `src/backend`. |
 
 Health endpoints, on both hosts:
 - `/health/live`: the process answers. Runs no check.
-- `/health/ready`: runs the checks tagged `ready` (none yet, the database check comes with #4).
+- `/health/ready`: runs the checks tagged `ready` (none yet, the database check comes with the first module that uses its database).
+
+In a container, `dotnet <Host>.dll --healthcheck` calls `/health/live` and exits with 0 or 1 (`BuildingBlocks.Web.HealthCheckCommand`). Compose uses it as the healthcheck, because the chiseled images have no shell and no curl.
 
 ## Architecture rules
 
