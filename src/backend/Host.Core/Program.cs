@@ -4,6 +4,11 @@ using Calendar;
 using Menu;
 
 // Composition root of the "core" process: hosts the Account, Menu and Calendar modules (ADR-001).
+if (HealthCheckCommand.IsRequested(args))
+{
+    return await HealthCheckCommand.RunAsync();
+}
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddProblemDetails();
@@ -24,6 +29,7 @@ app.MapMenuEndpoints();
 app.MapCalendarEndpoints();
 
 await app.RunAsync();
+return 0;
 
 /// <summary>Exposed so integration tests can start the host with WebApplicationFactory.</summary>
 public partial class Program;
