@@ -10,6 +10,10 @@
     <Deterministic>true</Deterministic>
     <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <!-- Recent SDKs only enforce IDE0005 (unnecessary using) at build when the XML documentation file is
+         generated. CS1591 (public member without doc comment) stays off: comments are written where they help. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
   <!-- GitHub Actions sets CI=true: normalizes source paths in the build output -->
