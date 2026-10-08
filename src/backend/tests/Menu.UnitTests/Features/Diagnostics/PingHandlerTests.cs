@@ -10,6 +10,6 @@ public class PingHandlerTests
         var result = new PingHandler().Handle();
 
         result.IsSuccess.ShouldBeTrue();
-        result.Value.Module.ShouldBe("menu");
+        result.Value.Module.ShouldBe("not-menu");
     }
 }
