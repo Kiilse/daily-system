@@ -64,7 +64,8 @@ jobs:
 
       - name: Test
         if: steps.changes.outputs.backend == 'true'
-        run: dotnet test --solution Ecosystem.slnx --configuration Release --no-build -- --coverlet --coverlet-output-format cobertura
+        # Explicit results directory: SDK feature bands disagree on the default location of the reports.
+        run: dotnet test --solution Ecosystem.slnx --configuration Release --no-build -- --coverlet --coverlet-output-format cobertura --results-directory "$PWD/TestResults/coverage"
 
       - name: Coverage gate (80 % on Domain and Features)
         if: steps.changes.outputs.backend == 'true'

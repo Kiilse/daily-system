@@ -1,18 +1,30 @@
 #!/usr/bin/env bash
-# Backend coverage gate (ADR-017): merges the Cobertura files written by
-#   dotnet test --solution Ecosystem.slnx -c Release -- --coverlet --coverlet-output-format cobertura
+# Backend coverage gate (ADR-017): merges the Cobertura files written, from src/backend, by
+#   dotnet test --solution Ecosystem.slnx -c Release -- --coverlet --coverlet-output-format cobertura --results-directory "$PWD/TestResults/coverage"
 # and fails when line coverage of Domain and Features code (endpoint mapping excluded) is below the threshold.
 # Same command in CI and on your machine. Usage, from anywhere: tools/backend-coverage.sh [threshold, default 80]
+# Locally, delete src/backend/TestResults first: files from an older run would be counted.
 set -euo pipefail
 
 threshold="${1:-80}"
 backend="$(cd "$(dirname "$0")/../src/backend" && pwd)"
+raw="$backend/TestResults/coverage"
 report="$backend/TestResults/coverage-report"
 
 cd "$backend"
+# One file per test project. Fewer means a run failed to write (or two runs collided on the same
+# timestamped name), more means leftovers from an older run: either way the percentage would lie.
+projects=$(find tests -name '*.csproj' | wc -l)
+reports=$(find "$raw" -maxdepth 1 -name 'coverage.cobertura*.xml' 2>/dev/null | wc -l)
+if [ "$reports" -ne "$projects" ]; then
+  echo "Found $reports coverage files in $raw for $projects test projects." >&2
+  echo "Delete src/backend/TestResults and run the tests again with --results-directory \"\$PWD/TestResults/coverage\"." >&2
+  exit 1
+fi
+
 rm -rf "$report"
 dotnet tool run reportgenerator \
-  "-reports:tests/**/TestResults/coverage.cobertura*.xml" \
+  "-reports:$raw/coverage.cobertura*.xml" \
   "-targetdir:$report" \
   "-reporttypes:JsonSummary;MarkdownSummaryGithub" \
   "-classfilters:+*.Domain.*;+*.Features.*;-*Endpoint;-*Endpoints" \

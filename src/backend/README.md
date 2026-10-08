@@ -11,7 +11,7 @@ Run from `src/backend/`.
 | Build (0 warnings expected, warnings are errors) | `dotnet build Ecosystem.slnx -c Release` |
 | Test | `dotnet test --solution Ecosystem.slnx -c Release` |
 | Test with coverage (Cobertura) | `dotnet test --solution Ecosystem.slnx -c Release -- --coverlet --coverlet-output-format cobertura` |
-| Coverage gate, as in CI (after the line above) | `dotnet tool restore` once, then `../../tools/backend-coverage.sh` (80 % on `*.Domain.*` and `*.Features.*`, endpoints excluded) |
+| Coverage gate, as in CI | `dotnet tool restore` once, then `rm -rf TestResults`, `dotnet test --solution Ecosystem.slnx -c Release -- --coverlet --coverlet-output-format cobertura --results-directory "$PWD/TestResults/coverage"`, `../../tools/backend-coverage.sh` (80 % on `*.Domain.*` and `*.Features.*`, endpoints excluded) |
 | Check formatting | `dotnet format Ecosystem.slnx --verify-no-changes` |
 | Restore exactly the locked versions | `dotnet restore Ecosystem.slnx --locked-mode` |
 | Run Host.Core | `dotnet run --project Host.Core` then `curl localhost:5100/health/live` |
