@@ -28,7 +28,8 @@ gh api --method PUT "repos/$repo/vulnerability-alerts" --silent
 gh api --method PUT "repos/$repo/private-vulnerability-reporting" --silent
 
 echo "== Ruleset $ruleset_name on the default branch"
-# Required status checks are not set here: the CI tickets (#6, #7, #8) add them as they land.
+# Required status checks: each CI ticket (#6, #7, #8) adds its job here as it lands.
+# integration_id 15368 is the GitHub Actions app: only a check reported by Actions counts.
 ruleset=$(cat <<JSON
 {
   "name": "$ruleset_name",
@@ -46,6 +47,16 @@ ruleset=$(cat <<JSON
         "require_last_push_approval": false,
         "required_review_thread_resolution": true,
         "allowed_merge_methods": ["squash"]
+      }
+    },
+    {
+      "type": "required_status_checks",
+      "parameters": {
+        "strict_required_status_checks_policy": false,
+        "do_not_enforce_on_create": false,
+        "required_status_checks": [
+          { "context": "backend", "integration_id": 15368 }
+        ]
       }
     },
     { "type": "required_linear_history" },

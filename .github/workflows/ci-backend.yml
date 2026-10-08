@@ -1,0 +1,71 @@
+# Backend CI (ADR-004, ADR-017): restore, build, unit and integration tests (Testcontainers PostgreSQL),
+# coverage gate. The `backend` job is a required check of the main ruleset (tools/apply-repo-settings.sh):
+# with no human reviewer, it is the only gate before main.
+name: ci-backend
+
+# No `paths` filter on purpose: a required check whose workflow never starts never reports, and the PR
+# then waits for it forever. The job always runs and skips its work when the backend did not change.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # A new push to a PR replaces the previous run. Runs on main are kept: every merged commit gets checked.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: src/backend
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          # The PR merge commit (or the squash commit on main) and its first parent, enough to diff.
+          fetch-depth: 2
+          persist-credentials: false
+
+      - name: Detect backend changes
+        id: changes
+        working-directory: .
+        run: |
+          # Fail closed: if the diff cannot be computed, git fails the step and so the check.
+          changed=$(git diff --name-only HEAD^1 HEAD)
+          if grep -qE '^(src/backend/|tools/backend-coverage\.sh$|\.github/workflows/ci-backend\.yml$)' <<<"$changed"; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "backend=false" >> "$GITHUB_OUTPUT"
+            echo "No backend change: build and tests skipped." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        if: steps.changes.outputs.backend == 'true'
+        with:
+          global-json-file: src/backend/global.json
+          cache: true
+          cache-dependency-path: src/backend/**/packages.lock.json
+
+      - name: Restore (locked mode)
+        if: steps.changes.outputs.backend == 'true'
+        run: |
+          dotnet tool restore
+          dotnet restore Ecosystem.slnx --locked-mode
+
+      - name: Build
+        if: steps.changes.outputs.backend == 'true'
+        run: dotnet build Ecosystem.slnx --configuration Release --no-restore
+
+      - name: Test
+        if: steps.changes.outputs.backend == 'true'
+        run: dotnet test --solution Ecosystem.slnx --configuration Release --no-build -- --coverlet --coverlet-output-format cobertura
+
+      - name: Coverage gate (80 % on Domain and Features)
+        if: steps.changes.outputs.backend == 'true'
+        run: ../../tools/backend-coverage.sh 80
