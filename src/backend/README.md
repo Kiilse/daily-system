@@ -11,6 +11,7 @@ Run from `src/backend/`.
 | Build (0 warnings expected, warnings are errors) | `dotnet build Ecosystem.slnx -c Release` |
 | Test | `dotnet test --solution Ecosystem.slnx -c Release` |
 | Test with coverage (Cobertura) | `dotnet test --solution Ecosystem.slnx -c Release -- --coverlet --coverlet-output-format cobertura` |
+| Coverage gate, as in CI | `dotnet tool restore` once, then `rm -rf TestResults`, `dotnet test --solution Ecosystem.slnx -c Release -- --coverlet --coverlet-output-format cobertura --results-directory "$PWD/TestResults/coverage"`, `../../tools/backend-coverage.sh` (80 % on `*.Domain.*` and `*.Features.*`, endpoints excluded) |
 | Check formatting | `dotnet format Ecosystem.slnx --verify-no-changes` |
 | Restore exactly the locked versions | `dotnet restore Ecosystem.slnx --locked-mode` |
 | Run Host.Core | `dotnet run --project Host.Core` then `curl localhost:5100/health/live` |
@@ -18,6 +19,8 @@ Run from `src/backend/`.
 | Run everything in containers (PostgreSQL, core, gateway-bff) | from `infra/`: see [docs/runbooks/local-setup.md](../../docs/runbooks/local-setup.md) |
 
 Local ports come from each host's `Properties/launchSettings.json`. In a container, both hosts listen on 8080 (`ASPNETCORE_HTTP_PORTS`, the .NET image default). To try the container path locally: `ASPNETCORE_HTTP_PORTS=8080 dotnet run --project Host.Core --no-launch-profile`.
+
+CI runs the same commands on every PR (`.github/workflows/ci-backend.yml`); its `backend` job is required to merge into `main`. `dotnet-tools.json` pins the .NET tools it uses (ReportGenerator).
 
 Package versions live in `Directory.Packages.props` (central package management). After changing one, run `dotnet restore` and commit the updated `packages.lock.json` files.
 
