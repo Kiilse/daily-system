@@ -91,3 +91,17 @@ docker compose down --volumes  # deletes the data too
 ## Secrets
 
 `.env` is gitignored; only `.env.example`, with empty values, is committed. Once #9 is done, inject secrets from Infisical instead of `.env`: `infisical run -- docker compose up`.
+
+## Frontend
+
+From `src/frontend/`, with Node from `.nvmrc` ([nvm](https://github.com/nvm-sh/nvm)):
+
+```bash
+nvm use
+npm ci          # installs exactly what package-lock.json lists
+npm start       # http://localhost:4200
+npm run lint    # includes the library boundary rules (ADR-015)
+npm test        # unit tests of every project, then the boundary rule tests
+```
+
+The SPA does not call the BFF yet (#17).

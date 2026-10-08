@@ -1,0 +1,71 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    // Libraries are never published: aliases point at their sources, so the app builds without building them first.
+    "paths": {
+      "@daily-system/api-clients": ["./projects/api-clients/src/public-api.ts"],
+      "@daily-system/core": ["./projects/core/src/public-api.ts"],
+      "@daily-system/feature-calendar": ["./projects/feature-calendar/src/public-api.ts"],
+      "@daily-system/feature-menu": ["./projects/feature-menu/src/public-api.ts"],
+      "@daily-system/ui": ["./projects/ui/src/public-api.ts"]
+    },
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/core/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/core/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/ui/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/ui/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/api-clients/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/api-clients/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/feature-menu/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/feature-menu/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/feature-calendar/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/feature-calendar/tsconfig.spec.json"
+    }
+  ]
+}
