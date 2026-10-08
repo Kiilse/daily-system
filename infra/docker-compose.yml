@@ -1,0 +1,79 @@
+# Local environment (ADR-018): the production images and the production database roles on one machine.
+# From infra/: cp .env.example .env, fill every value, then docker compose up --build.
+# Step by step and manual checks: docs/runbooks/local-setup.md.
+name: daily-system
+
+services:
+  postgres:
+    image: postgres:17@sha256:2d2b8998d31037bf721cfdf764d76ba74171b4fab3431b7f72c27c56ddbdf9e3
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set in infra/.env}
+      # Read by postgres/init/01-databases.sql on the first start (empty volume) only.
+      BFF_DB_MIGRATOR_PASSWORD: ${BFF_DB_MIGRATOR_PASSWORD:?set in infra/.env}
+      BFF_DB_APP_PASSWORD: ${BFF_DB_APP_PASSWORD:?set in infra/.env}
+      ACCOUNT_DB_MIGRATOR_PASSWORD: ${ACCOUNT_DB_MIGRATOR_PASSWORD:?set in infra/.env}
+      ACCOUNT_DB_APP_PASSWORD: ${ACCOUNT_DB_APP_PASSWORD:?set in infra/.env}
+      MENU_DB_MIGRATOR_PASSWORD: ${MENU_DB_MIGRATOR_PASSWORD:?set in infra/.env}
+      MENU_DB_APP_PASSWORD: ${MENU_DB_APP_PASSWORD:?set in infra/.env}
+      CALENDAR_DB_MIGRATOR_PASSWORD: ${CALENDAR_DB_MIGRATOR_PASSWORD:?set in infra/.env}
+      CALENDAR_DB_APP_PASSWORD: ${CALENDAR_DB_APP_PASSWORD:?set in infra/.env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    # Loopback only: reachable by tools and dotnet run on this machine, not by the network.
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5432}:5432"
+    healthcheck:
+      # Over TCP on purpose: during the init scripts the server only listens on its Unix socket,
+      # so a plain pg_isready would report healthy before the roles exist.
+      test: ["CMD", "pg_isready", "--host=127.0.0.1", "--username=postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
+
+  core:
+    build:
+      context: ../src/backend
+      dockerfile: Host.Core/Dockerfile
+    image: daily-system/core:local
+    environment:
+      ConnectionStrings__Account: Host=postgres;Database=account_db;Username=account_db_app;Password=${ACCOUNT_DB_APP_PASSWORD:?set in infra/.env}
+      ConnectionStrings__Menu: Host=postgres;Database=menu_db;Username=menu_db_app;Password=${MENU_DB_APP_PASSWORD:?set in infra/.env}
+      ConnectionStrings__Calendar: Host=postgres;Database=calendar_db;Username=calendar_db_app;Password=${CALENDAR_DB_APP_PASSWORD:?set in infra/.env}
+    # No published port: only the other containers reach core. It keeps outbound internet access,
+    # which token validation (#16) and Key Vault (#19) need.
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      # Chiseled images have no shell and no curl: the app checks itself (HealthCheckCommand).
+      test: ["CMD", "dotnet", "Host.Core.dll", "--healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  gateway-bff:
+    build:
+      context: ../src/backend
+      dockerfile: Gateway.Bff/Dockerfile
+    image: daily-system/gateway-bff:local
+    environment:
+      ConnectionStrings__Bff: Host=postgres;Database=bff_db;Username=bff_db_app;Password=${BFF_DB_APP_PASSWORD:?set in infra/.env}
+    ports:
+      - "127.0.0.1:5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      core:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "dotnet", "Gateway.Bff.dll", "--healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  postgres-data:
