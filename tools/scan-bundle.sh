@@ -32,8 +32,13 @@ patterns=(
 for entry in "${patterns[@]}"; do
   name="${entry%%|*}"
   regex="${entry#*|}"
-  if files=$(grep -rlIE -- "$regex" "$dir"); then
+  # grep exits 1 on no match and 2 on error (bad regex, unreadable file): an error must fail the scan, not pass it.
+  rc=0; files=$(grep -rlIE -- "$regex" "$dir") || rc=$?
+  if (( rc == 0 )); then
     echo "Possible $name in:"; echo "$files"
+    found=1
+  elif (( rc > 1 )); then
+    echo "Pattern '$name' could not be checked (grep exit $rc)"
     found=1
   fi
 done
