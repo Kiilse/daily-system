@@ -1,0 +1,212 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "npm"
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "daily-system": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "",
+      "sourceRoot": "src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "src/main.ts",
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "public"
+              }
+            ],
+            "styles": [
+              "src/styles.scss"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "daily-system:build:production"
+            },
+            "development": {
+              "buildTarget": "daily-system:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "test": {
+          "builder": "@angular/build:unit-test"
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
+        }
+      }
+    },
+    "core": {
+      "projectType": "library",
+      "root": "projects/core",
+      "sourceRoot": "projects/core/src",
+      "prefix": "lib",
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/core/tsconfig.spec.json",
+            "buildTarget": "daily-system:build:development"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/core/**/*.ts",
+              "projects/core/**/*.html"
+            ],
+            "eslintConfig": "projects/core/eslint.config.js"
+          }
+        }
+      }
+    },
+    "ui": {
+      "projectType": "library",
+      "root": "projects/ui",
+      "sourceRoot": "projects/ui/src",
+      "prefix": "lib",
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/ui/tsconfig.spec.json",
+            "buildTarget": "daily-system:build:development"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/ui/**/*.ts",
+              "projects/ui/**/*.html"
+            ],
+            "eslintConfig": "projects/ui/eslint.config.js"
+          }
+        }
+      }
+    },
+    "api-clients": {
+      "projectType": "library",
+      "root": "projects/api-clients",
+      "sourceRoot": "projects/api-clients/src",
+      "prefix": "lib",
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/api-clients/tsconfig.spec.json",
+            "buildTarget": "daily-system:build:development"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/api-clients/**/*.ts",
+              "projects/api-clients/**/*.html"
+            ],
+            "eslintConfig": "projects/api-clients/eslint.config.js"
+          }
+        }
+      }
+    },
+    "feature-menu": {
+      "projectType": "library",
+      "root": "projects/feature-menu",
+      "sourceRoot": "projects/feature-menu/src",
+      "prefix": "lib",
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/feature-menu/tsconfig.spec.json",
+            "buildTarget": "daily-system:build:development"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/feature-menu/**/*.ts",
+              "projects/feature-menu/**/*.html"
+            ],
+            "eslintConfig": "projects/feature-menu/eslint.config.js"
+          }
+        }
+      }
+    },
+    "feature-calendar": {
+      "projectType": "library",
+      "root": "projects/feature-calendar",
+      "sourceRoot": "projects/feature-calendar/src",
+      "prefix": "lib",
+      "architect": {
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "tsConfig": "projects/feature-calendar/tsconfig.spec.json",
+            "buildTarget": "daily-system:build:development"
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/feature-calendar/**/*.ts",
+              "projects/feature-calendar/**/*.html"
+            ],
+            "eslintConfig": "projects/feature-calendar/eslint.config.js"
+          }
+        }
+      }
+    }
+  }
+}
