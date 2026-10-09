@@ -60,3 +60,4 @@ A module may reference another module **only through its `*.Contracts` project**
 | 6 | Only `BuildingBlocks.Security` uses `AesGcm` | `CryptographyTests` |
 
 Adding a module: add its folder under `Modules/`, then add it to `ProductionCode.Modules` in `tests/Architecture.Tests`. `ModuleListTests` fails until both match.
+
