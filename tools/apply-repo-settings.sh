@@ -55,7 +55,8 @@ ruleset=$(cat <<JSON
         "strict_required_status_checks_policy": false,
         "do_not_enforce_on_create": false,
         "required_status_checks": [
-          { "context": "backend", "integration_id": 15368 }
+          { "context": "backend", "integration_id": 15368 },
+          { "context": "frontend", "integration_id": 15368 }
         ]
       }
     },
