@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BuildingBlocks\Web\BuildingBlocks.Web.csproj" />
+    <PackageReference Include="Newtonsoft.Json" />
     <ProjectReference Include="..\Modules\Account\Account\Account.csproj" />
     <ProjectReference Include="..\Modules\Menu\Menu\Menu.csproj" />
     <ProjectReference Include="..\Modules\Calendar\Calendar\Calendar.csproj" />
