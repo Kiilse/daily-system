@@ -12,7 +12,7 @@ related: "[Ecosystem SaaS - Technical Specification](../specs/technical-specific
 
 ## Status
 
-Accepted (2026-09-25)
+Accepted (2026-09-25), amended 2026-10-10 (ticket #8: npm audit scope, Trivy pinning, CodeQL merge gate)
 
 ## Context
 
@@ -23,9 +23,9 @@ No credential may be reachable through the frontend or the APIs. The application
 On every PR (blocking):
 - **Gitleaks** on the diff (also as a local pre-commit hook). GitHub push protection enabled.
 - **Repository is public** (decided 2026-09-25): CodeQL code scanning and GitHub secret scanning with push protection are free.
-- **SAST**: CodeQL for C# and TypeScript. Roslyn security analyzers and `TreatWarningsAsErrors`.
-- **Dependencies**: GitHub dependency review, `dotnet list package --vulnerable --include-transitive`, `npm audit --audit-level=high`, Dependabot.
-- **Containers**: Trivy on built images, failing on HIGH/CRITICAL with an available fix.
+- **SAST**: CodeQL for C# and TypeScript (`security-extended`). Roslyn security analyzers and `TreatWarningsAsErrors`. A `code_scanning` rule in the main ruleset blocks the merge on a high or critical CodeQL alert: without it, an alert only shows in the Security tab.
+- **Dependencies**: GitHub dependency review, `dotnet list package --vulnerable --include-transitive`, `npm audit --omit=dev --audit-level=high`, Dependabot. `npm audit` has no ignore file, and on 2026-10-10 it reported high and critical findings with no real fix in dev-only tooling (`braces` and `handlebars` under `eslint-plugin-boundaries`, never shipped in the bundle). It therefore audits production dependencies only; a new dev dependency is still checked by dependency review.
+- **Containers**: Trivy on built images, failing on HIGH/CRITICAL with an available fix. Trivy is installed as a binary pinned by checksum, not through `aquasecurity/trivy-action`, whose tags were rewritten in the March 2026 supply chain attack (CVE-2026-33634). Every third-party action is pinned by commit SHA.
 - **Bundle scan**: Gitleaks and custom patterns on the built Angular `dist/`.
 
 Nightly:
