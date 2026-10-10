@@ -30,6 +30,7 @@ gh api --method PUT "repos/$repo/private-vulnerability-reporting" --silent
 echo "== Ruleset $ruleset_name on the default branch"
 # Required status checks: each CI ticket (#6, #7, #8) adds its job here as it lands.
 # integration_id 15368 is the GitHub Actions app: only a check reported by Actions counts.
+# code_scanning: a CodeQL alert only shows in the Security tab; this rule makes a high one block the merge.
 ruleset=$(cat <<JSON
 {
   "name": "$ruleset_name",
@@ -56,7 +57,22 @@ ruleset=$(cat <<JSON
         "do_not_enforce_on_create": false,
         "required_status_checks": [
           { "context": "backend", "integration_id": 15368 },
-          { "context": "frontend", "integration_id": 15368 }
+          { "context": "frontend", "integration_id": 15368 },
+          { "context": "secrets", "integration_id": 15368 },
+          { "context": "codeql (csharp)", "integration_id": 15368 },
+          { "context": "codeql (javascript-typescript)", "integration_id": 15368 },
+          { "context": "dependency-review", "integration_id": 15368 },
+          { "context": "dotnet-vulnerable", "integration_id": 15368 },
+          { "context": "npm-audit", "integration_id": 15368 },
+          { "context": "images", "integration_id": 15368 }
+        ]
+      }
+    },
+    {
+      "type": "code_scanning",
+      "parameters": {
+        "code_scanning_tools": [
+          { "tool": "CodeQL", "security_alerts_threshold": "high_or_higher", "alerts_threshold": "errors" }
         ]
       }
     },
