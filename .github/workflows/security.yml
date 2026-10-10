@@ -48,8 +48,8 @@ jobs:
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
-        # --redact: the repository is public, so are the CI logs.
-        run: gitleaks git --redact --no-banner --log-opts="${BASE}..${HEAD}"
+        # --redact: the repository is public, so are the CI logs. --verbose still names file, line and rule.
+        run: gitleaks git --redact --verbose --no-banner --log-opts="${BASE}..${HEAD}"
 
   codeql:
     name: codeql (${{ matrix.language }})
@@ -87,7 +87,8 @@ jobs:
       - name: Build (C#)
         if: matrix.language == 'csharp'
         working-directory: src/backend
-        run: dotnet build Ecosystem.slnx --configuration Release
+        # No compiler server: the CodeQL tracer only sees compilations that run in a traced process.
+        run: dotnet build Ecosystem.slnx --configuration Release -p:UseSharedCompilation=false
 
       - uses: github/codeql-action/analyze@2892aa5e19bbd11bc0cff5427e3b750a04d9e3c2 # v4.38.2
         with:
