@@ -52,6 +52,7 @@ jobs:
         run: gitleaks git --redact --no-banner --log-opts="${BASE}..${HEAD}"
 
   codeql:
+    name: codeql (${{ matrix.language }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
@@ -125,10 +126,10 @@ jobs:
       - name: List vulnerable packages
         # The command exits 0 even when it finds something, so the JSON report is counted instead.
         run: |
-          report=$(dotnet list Ecosystem.slnx package --vulnerable --include-transitive --format json)
+          report=$(dotnet list Ecosystem.slnx package --vulnerable --include-transitive --no-restore --format json)
           count=$(jq '[.projects[].frameworks[]? | (.topLevelPackages[]?, .transitivePackages[]?) | select(.vulnerabilities)] | length' <<<"$report")
           if [[ "$count" != 0 ]]; then
-            dotnet list Ecosystem.slnx package --vulnerable --include-transitive
+            dotnet list Ecosystem.slnx package --vulnerable --include-transitive --no-restore
             echo "::error::$count vulnerable NuGet package(s)"
             exit 1
           fi
