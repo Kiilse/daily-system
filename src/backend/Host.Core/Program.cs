@@ -28,6 +28,15 @@ app.MapAccountEndpoints();
 app.MapMenuEndpoints();
 app.MapCalendarEndpoints();
 
+// Throwaway for #8, do not merge: user input concatenated into SQL, CodeQL must raise cs/sql-injection.
+app.MapGet("/throwaway-sqli", (HttpRequest request, [Microsoft.AspNetCore.Mvc.FromServices] System.Data.IDbCommand command) =>
+{
+#pragma warning disable CA2100
+    command.CommandText = "SELECT id FROM users WHERE name = '" + request.Query["name"] + "'";
+#pragma warning restore CA2100
+    return command.ExecuteScalar()?.ToString();
+});
+
 await app.RunAsync();
 return 0;
 
