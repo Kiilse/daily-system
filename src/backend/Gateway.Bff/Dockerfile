@@ -1,7 +1,7 @@
 # Gateway.Bff image (ADR-004: built once, deployed to every environment). Build context: src/backend.
 # Both base images are pinned by digest; Dependabot proposes the updates.
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:e70cdb7f80b0348f5cb85f19a8f670fca061f033d57eed12fa003d58b0e06317 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:0d99ebf1ccad15037b5c98c9fe8979d6b8dbac23812feae2277a0b277b5c5ffa AS build
 WORKDIR /src
 
 # Restore layer: only the files that decide the dependencies. Docker reuses this layer from its
