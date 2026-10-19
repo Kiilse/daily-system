@@ -16,7 +16,7 @@ COPY . .
 RUN dotnet publish Gateway.Bff/Gateway.Bff.csproj --configuration Release --no-restore --output /app -p:UseAppHost=false
 
 # Runtime: chiseled Ubuntu, no shell, no package manager, runs as the non-root "app" user.
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:48e51f2f6798897be7ac4e775c049ed8fe60d3190f637e1f9c9dc7513efa659c
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:84def277556c2843a44fdeefbd3145d0a2e32d8f736d0c1a7b0a96b2880b0187
 WORKDIR /app
 COPY --from=build /app .
 USER $APP_UID
