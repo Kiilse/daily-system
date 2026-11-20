@@ -48,6 +48,14 @@ Nightly:
 - False positives will need triage and documented suppressions.
 - CI time increases (mitigated by running jobs in parallel).
 - Public repository: a committed secret is exposed instantly and scraped by bots. The pre-commit hook is not optional, and a leaked secret is always rotated, never just removed from Git history.
+- `images` and `npm-audit` scan the whole image and the whole lock file, not the diff. A new CVE in a base image or a dependency already on `main` makes **every** PR red until it is fixed, including the Dependabot PR that would fix it if it only touches one Dockerfile. Observed in October and November 2026 (#85).
+
+**Amendment (2026-11-20, #85)**
+- Base image updates land in one PR across all Dockerfiles (Dependabot `group-by: dependency-name`).
+- Dependabot ignores .NET major versions: the project stays on the LTS release.
+- The security workflow also runs every Monday on `main`, so a vulnerable `main` is seen without a PR.
+- Tool downloads in CI retry on transient errors.
+- Procedure when the gate turns red without a dependency change: [security-gate-red runbook](../runbooks/security-gate-red.md).
 
 ## Key Concepts
 

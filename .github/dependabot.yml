@@ -26,14 +26,24 @@ updates:
       minor-and-patch:
         update-types: [minor, patch]
 
+  # Base images (ticket #85). `group-by: dependency-name` makes one PR per image across every
+  # Dockerfile: the `images` check scans all images, so a PR that updates only one Dockerfile
+  # stays red as long as the other image is vulnerable.
   - package-ecosystem: docker
     directories:
       - /src/backend/**
     schedule:
       interval: weekly
     groups:
-      minor-and-patch:
-        update-types: [minor, patch]
+      dotnet-base-images:
+        group-by: dependency-name
+        patterns: ["dotnet/*"]
+    # .NET LTS only (technical specification, stack table): no move to an STS major such as .NET 11.
+    ignore:
+      - dependency-name: "dotnet/sdk"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "dotnet/aspnet"
+        update-types: ["version-update:semver-major"]
 
   # Image digests in infra/docker-compose.yml (the docker ecosystem only reads Dockerfiles).
   - package-ecosystem: docker-compose

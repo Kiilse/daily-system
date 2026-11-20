@@ -8,6 +8,12 @@ on:
   pull_request:
   push:
     branches: [main]
+  # Weekly scan of main (ticket #85): a new CVE in a base image or a dependency already on main must
+  # show up without waiting for a PR. Monday 05:00 UTC, before Dependabot's weekly run.
+  # GitHub emails the repository owner when a scheduled run fails.
+  schedule:
+    - cron: "0 5 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -39,17 +45,22 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           archive="gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
-          curl -sSfL -o "$archive" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/$archive"
+          curl -sSfL --retry 3 --retry-all-errors --retry-delay 5 -o "$archive" "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/$archive"
           echo "${GITLEAKS_SHA256}  $archive" | sha256sum --check --strict
           tar -xzf "$archive" gitleaks
           echo "$PWD" >> "$GITHUB_PATH"
 
-      - name: Scan the commits of the PR (or of the push)
+      - name: Scan the commits of the PR (or of the push, or the whole history when scheduled)
         env:
           BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
           HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         # --redact: the repository is public, so are the CI logs. --verbose still names file, line and rule.
-        run: gitleaks git --redact --verbose --no-banner --log-opts="${BASE}..${HEAD}"
+        run: |
+          if [ -n "$BASE" ]; then
+            gitleaks git --redact --verbose --no-banner --log-opts="${BASE}..${HEAD}"
+          else
+            gitleaks git --redact --verbose --no-banner
+          fi
 
   codeql:
     name: codeql (${{ matrix.language }})
@@ -170,7 +181,7 @@ jobs:
         working-directory: ${{ runner.temp }}
         run: |
           archive="trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz"
-          curl -sSfL -o "$archive" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/$archive"
+          curl -sSfL --retry 3 --retry-all-errors --retry-delay 5 -o "$archive" "https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/$archive"
           echo "${TRIVY_SHA256}  $archive" | sha256sum --check --strict
           tar -xzf "$archive" trivy
           echo "$PWD" >> "$GITHUB_PATH"

@@ -1,7 +1,7 @@
 # Host.Core image (ADR-004: built once, deployed to every environment). Build context: src/backend.
 # Both base images are pinned by digest; Dependabot proposes the updates.
 
-FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:e70cdb7f80b0348f5cb85f19a8f670fca061f033d57eed12fa003d58b0e06317 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:bef136a371963aaa46ec97882845ef6f54dec15728bb4b128b1c2a400ffbc9b4 AS build
 WORKDIR /src
 
 # Restore layer: only the files that decide the dependencies. Docker reuses this layer from its
@@ -22,7 +22,7 @@ COPY . .
 RUN dotnet publish Host.Core/Host.Core.csproj --configuration Release --no-restore --output /app -p:UseAppHost=false
 
 # Runtime: chiseled Ubuntu, no shell, no package manager, runs as the non-root "app" user.
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:48e51f2f6798897be7ac4e775c049ed8fe60d3190f637e1f9c9dc7513efa659c
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled@sha256:7c625e44e5d588b4d7b2a913e94ca4bd5098ce47442da404829e4c7936a764e1
 WORKDIR /app
 COPY --from=build /app .
 USER $APP_UID
