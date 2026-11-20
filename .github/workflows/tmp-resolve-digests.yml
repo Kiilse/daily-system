@@ -1,0 +1,20 @@
+# Temporary (ticket #85): resolves the current .NET 10 base image digests. Removed before the PR.
+name: tmp-resolve-digests
+on:
+  push:
+    branches: [fix/85-security-gate]
+permissions:
+  contents: read
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve digests and versions
+        run: |
+          for ref in mcr.microsoft.com/dotnet/sdk:10.0 mcr.microsoft.com/dotnet/aspnet:10.0-noble-chiseled; do
+            echo "== $ref"
+            docker buildx imagetools inspect "$ref" --format '{{json .Manifest.Digest}}'
+            docker pull -q "$ref" >/dev/null
+            docker image inspect "$ref" --format '{{range .Config.Env}}{{println .}}{{end}}' | grep -E 'VERSION'
+          done
+          docker run --rm mcr.microsoft.com/dotnet/sdk:10.0 dotnet --version
