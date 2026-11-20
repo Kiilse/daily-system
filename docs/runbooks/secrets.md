@@ -33,6 +33,8 @@ Where every secret lives, who uses it and how to rotate it ([ADR-010](../adr/adr
 
 ## Bootstrap (ticket #9)
 
+First time: create the accounts and install the CLIs with [accounts-setup.md](accounts-setup.md).
+
 Run from Git Bash at the repository root, once per environment:
 
 ```bash

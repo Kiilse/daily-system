@@ -13,6 +13,9 @@ TENANT_ID="$(az account show --query tenantId -o tsv)"
 ME="$(az ad signed-in-user show --query id -o tsv)"
 echo "== Subscription: $(az account show --query name -o tsv)"
 
+echo "== Resource provider Microsoft.KeyVault (needed once on a new subscription)"
+az provider register --namespace Microsoft.KeyVault --wait -o none
+
 echo "== Resource group $RESOURCE_GROUP ($LOCATION)"
 az group create --name "$RESOURCE_GROUP" --location "$LOCATION" -o none
 
